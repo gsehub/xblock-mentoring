@@ -85,7 +85,14 @@ function MentoringBlock(runtime, element) {
                 }
             }
             var handlerUrl = runtime.handlerUrl(element, 'submit');
-            $.post(handlerUrl, JSON.stringify(data)).success(handleSubmitResults);
+            $.ajax(handlerUrl, {
+                type: 'POST',
+                // Set contentType to prevent jQuery from modifying the JSON data.
+                // (see: http://bugs.jquery.com/ticket/8417)
+                contentType: 'application/json; charset: UTF-8',
+                data: JSON.stringify(data),
+                success: handleSubmitResults
+            });
         });
 
         if (submit_dom.length) {
