@@ -44,7 +44,6 @@ def package_data(pkg, root_list):
 
 BLOCKS = [
     'mentoring = mentoring:MentoringBlock',
-    'mentoring-dataexport = mentoring:MentoringDataExportBlock',
 ]
 
 BLOCKS_CHILDREN = [

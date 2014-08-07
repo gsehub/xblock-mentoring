@@ -1,5 +1,4 @@
 from .answer import AnswerBlock
-from .dataexport import MentoringDataExportBlock
 from .html import HTMLBlock
 from .quizz import QuizzBlock, QuizzChoiceBlock, QuizzTipBlock
 from .mentoring import MentoringBlock
