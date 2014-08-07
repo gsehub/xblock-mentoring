@@ -24,9 +24,14 @@
 # Imports ###########################################################
 
 import logging
+import uuid
+
+from lxml import etree
+from StringIO import StringIO
 
 from xblock.core import XBlock
 from xblock.fields import Boolean, Scope, String
+from xblock.fragment import Fragment
 
 from .light_children import XBlockWithLightChildren
 from .message import MentoringMessageBlock
@@ -58,7 +63,7 @@ class MentoringBlock(XBlockWithLightChildren):
     followed_by = String(help="url_name of the step after the current mentoring block in workflow",
                          default=None, scope=Scope.content)
     url_name = String(help="Name of the current step, used for URL building",
-                      default='mentoring', scope=Scope.content)
+                      default='mentoring-default', scope=Scope.content)
     enforce_dependency = Boolean(help="Should the next step be the current block to complete?",
                                  default=True, scope=Scope.content)
     display_submit = Boolean(help="Allow to submit current block?", default=True, scope=Scope.content)
@@ -155,6 +160,66 @@ class MentoringBlock(XBlockWithLightChildren):
             return fragment.body_html()
         else:
             return ''
+
+    def studio_view(self, context):
+        """
+        Editing view in Studio
+        """
+        fragment = Fragment()
+        fragment.add_content(render_template('templates/html/mentoring_edit.html', {
+            'self': self,
+            'xml_content': self.xml_content or self.default_xml_content,
+        }))
+        fragment.add_javascript_url(
+            self.runtime.local_resource_url(self, 'public/js/mentoring_edit.js'))
+        fragment.add_css_url(
+            self.runtime.local_resource_url(self, 'public/css/mentoring_edit.css'))
+
+        fragment.initialize_js('MentoringEditBlock')
+
+        return fragment
+
+    @XBlock.json_handler
+    def studio_submit(self, submissions, suffix=''):
+        log.info(u'Received studio submissions: {}'.format(submissions))
+
+        xml_content = submissions['xml_content']
+        try:
+            content = etree.parse(StringIO(xml_content))
+        except etree.XMLSyntaxError as e:
+            response = {
+                'result': 'error',
+                'message': e.message
+            }
+        else:
+            response = {
+                'result': 'success',
+            }
+            self.xml_content = etree.tostring(content, pretty_print=True)
+
+        log.debug(u'Response from Studio: {}'.format(response))
+        return response
+
+    @property
+    def default_xml_content(self):
+        return render_template('templates/xml/mentoring_default.xml', {
+            'self': self,
+            'url_name': self.url_name_with_default,
+        })
+
+    @property
+    def url_name_with_default(self):
+        """
+        Ensure the `url_name` is set to a unique, non-empty value.
+        This should ideally be handled by Studio, but we need to declare the attribute
+        to be able to use it from the workbench, and when this happen Studio doesn't set
+        a unique default value - this property gives either the set value, or if none is set
+        a randomized default value
+        """
+        if self.url_name == 'mentoring-default':
+            return 'mentoring-{}'.format(uuid.uuid4())
+        else:
+            return self.url_name
 
     @staticmethod
     def workbench_scenarios():
