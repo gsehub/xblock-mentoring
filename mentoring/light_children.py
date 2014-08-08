@@ -84,7 +84,9 @@ class LightChildrenMixin(XBlockWithChildrenFragmentsMixin):
         for child_id, xml_child in enumerate(node):
             cls.add_node_as_child(block, xml_child, child_id)
 
-        for name, value in attr:
+        for name, value in node.attrib.items():
+            if value == "false": value = False
+            if value == "true": value = True
             setattr(block, name, value)
 
         return block
