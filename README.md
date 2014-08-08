@@ -9,7 +9,6 @@ It supports:
 * **Self-assessment quizzes** (multiple choice), to display predetermined feedback to a student based on his choices in the self-assessment. Supports rating scales and arbitrary answers.
 * **Progression tracking**, allowing to check that the student has completed the previous steps before allowing to complete a given XBlock instance. Provides a link to the next step to the student.
 * **Tables**, which allow to present answers from the student to free-form answers in a concise way. Supports custom headers.
-* **Data export**, to allow course authors to download a CSV file containing the free-form answers entered by the students
 
 Examples
 --------
@@ -91,13 +90,6 @@ Second XBlock instance:
 </mentoring-table>
 ```
 
-### Data export
-
-```xml
-<vertical>
-    <mentoring-dataexport url_name="mentoring_dataexport"></mentoring-dataexport>
-</vertical>
-```
 
 Installing dependencies
 -----------------------

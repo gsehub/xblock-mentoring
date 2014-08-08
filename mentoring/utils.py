@@ -26,9 +26,7 @@
 import logging
 import os
 import pkg_resources
-import unicodecsv
 
-from cStringIO import StringIO
 from django.template import Context, Template
 from xblock.fragment import Fragment
 
@@ -54,16 +52,6 @@ def render_template(template_path, context={}):
     template_str = load_resource(template_path)
     template = Template(template_str)
     return template.render(Context(context))
-
-def list2csv(row):
-    """
-    Convert a list to a CSV string (single row)
-    """
-    f = StringIO()
-    writer = unicodecsv.writer(f, encoding='utf-8')
-    writer.writerow(row)
-    f.seek(0)
-    return f.read()
 
 def get_scenarios_from_path(scenarios_path, include_identifier=False):
     """

@@ -85,6 +85,8 @@ class LightChildrenMixin(XBlockWithChildrenFragmentsMixin):
             cls.add_node_as_child(block, xml_child, child_id)
 
         for name, value in attr:
+            if value == "false": value = False
+            if value == "true": value = True
             setattr(block, name, value)
 
         return block
@@ -120,7 +122,7 @@ class LightChildrenMixin(XBlockWithChildrenFragmentsMixin):
             return
 
         node = etree.parse(StringIO(self.xml_content)).getroot()
-        LightChildrenMixin.init_block_from_node(self, node, {})
+        LightChildrenMixin.init_block_from_node(self, node, node.items())
 
     def get_children_objects(self):
         """
