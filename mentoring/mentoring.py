@@ -65,8 +65,8 @@ class MentoringBlock(XBlockWithLightChildren):
     url_name = String(help="Name of the current step, used for URL building",
                       default='mentoring-default', scope=Scope.content)
     enforce_dependency = Boolean(help="Should the next step be the current block to complete?",
-                                 default=True, scope=Scope.content)
-    display_submit = Boolean(help="Allow to submit current block?", default=True, scope=Scope.content)
+                                 default=True, scope=Scope.content, enforce_type=True)
+    display_submit = Boolean(help="Allow to submit current block?", default=True, scope=Scope.content, enforce_type=True)
     xml_content = String(help="XML content", default='', scope=Scope.content)
     has_children = True
     icon_class = 'problem'
