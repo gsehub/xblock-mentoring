@@ -133,14 +133,16 @@ class MentoringBlock(XBlockWithLightChildren):
         if self.completed:
             completed = True
 
-        if self.has_missing_dependency:
+        if not self.enforce_dependency:
+            # Accept partial answers when dependencies aren't enforced
+            completed = True
+        elif self.has_missing_dependency:
             completed = False
             message = 'You need to complete all previous steps before being able to complete '+\
                       'the current one.'
         elif completed and self.next_step == self.url_name:
             self.next_step = self.followed_by
 
-        log.warn(submit_results);
         self.completed = bool(completed)
         return {
             'submitResults': submit_results,
