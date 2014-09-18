@@ -1,4 +1,4 @@
-<vertical>
+<vertical_demo>
     <mentoring url_name="quizz_1" enforce_dependency="false">
         <quizz name="quizz_1_1" type="choices">
             <question>Do you like this quizz?</question>
@@ -25,4 +25,4 @@
             <html><p>Congratulations!</p></html>
         </message>
     </mentoring>
-</vertical>
+</vertical_demo>
