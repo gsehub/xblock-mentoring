@@ -31,6 +31,12 @@ from mentoring.test_base import MentoringBaseTest
 # Classes ###########################################################
 
 class QuizzBlockTest(MentoringBaseTest):
+    def assert_tips_present(self, messages, *args):
+        tips = messages.find_elements_by_xpath('./*')
+        self.assertEqual(len(tips), len(args)+1)
+        self.assertEqual(tips[0].text, 'FEEDBACK')
+        for i in range(len(args)):
+            self.assertEqual(tips[i+1].text, args[i])
 
     def test_quizz_choices_rating(self):
         """
@@ -95,13 +101,13 @@ class QuizzBlockTest(MentoringBaseTest):
         submit = mentoring.find_element_by_css_selector('input.submit')
         submit.click()
 
-        tips = messages.find_elements_by_css_selector('.quizz-tip')
-        self.assertEqual(len(tips), 2)
-        self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you have not provided an answer.')
-        self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you have not provided an answer.')
-        # TODO: Cannot test rejection of partial answers, as partial answers
-        # are allowed when dependencies are not enforced, even if the block
-        # reports non-completion.
+        self.assert_tips_present(messages,
+            'To the question "Do you like this quizz?", you have not provided an answer.',
+            'To the question "How much do you rate this quizz?", you have not provided an answer.',
+        )
+        # TODO: Test rejection of partial answers. Unable to do, since
+        # partial answers are allowed when dependencies are not enforced,
+        # even if the block reports non-completion.
         #self.assertEqual(progress.text, '(Not completed)')
         #self.assertFalse(progress.find_elements_by_xpath('./*'))
 
@@ -110,15 +116,11 @@ class QuizzBlockTest(MentoringBaseTest):
         submit.click()
 
         time.sleep(1)
-        tips = messages.find_elements_by_css_selector('.quizz-tip')
-        self.assertEqual(len(tips), 2)
-        self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you answered "Maybe not".\nAh, damn.')
-        self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you have not provided an answer.')
-        # TODO: Cannot test rejection of partial answers, as partial answers
-        # are allowed when dependencies are not enforced, even if the block
-        # reports non-completion.
-        #self.assertEqual(progress.text, '(Not completed)')
-        #self.assertFalse(progress.find_elements_by_xpath('./*'))
+        self.assert_tips_present(messages,
+            'To the question "Do you like this quizz?", you answered "Maybe not".\nAh, damn.',
+            'To the question "How much do you rate this quizz?", you have not provided an answer.',
+        )
+        # TODO: Test rejection of partial answers
 
         # One with only display tip, one with reject tip - should not complete
         quizz1_choices_input[0].click()
@@ -126,15 +128,11 @@ class QuizzBlockTest(MentoringBaseTest):
         submit.click()
 
         time.sleep(1)
-        tips = messages.find_elements_by_css_selector('.quizz-tip')
-        self.assertEqual(len(tips), 2)
-        self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you answered "Yes".\nGreat!')
-        self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you answered "3".\nWill do better next time...')
-        # TODO: Cannot test rejection of partial answers, as partial answers
-        # are allowed when dependencies are not enforced, even if the block
-        # reports non-completion.
-        #self.assertEqual(progress.text, '(Not completed)')
-        #self.assertFalse(progress.find_elements_by_xpath('./*'))
+        self.assert_tips_present(messages,
+            'To the question "Do you like this quizz?", you answered "Yes".\nGreat!',
+            'To the question "How much do you rate this quizz?", you answered "3".\nWill do better next time...',
+        )
+        # TODO: Test rejection of partial answers
 
         # Only display tips, to allow to complete
         quizz1_choices_input[0].click()
@@ -142,12 +140,11 @@ class QuizzBlockTest(MentoringBaseTest):
         submit.click()
 
         time.sleep(1)
-        tips = messages.find_elements_by_xpath('./*')
-        self.assertEqual(len(tips), 4)
-        self.assertEqual(tips[0].text, 'FEEDBACK')
-        self.assertEqual(tips[1].text, 'To the question "Do you like this quizz?", you answered "Yes".\nGreat!')
-        self.assertEqual(tips[2].text, 'To the question "How much do you rate this quizz?", you answered "4".\nI love good grades.')
-        self.assertEqual(tips[3].text, 'Congratulations!\nAll is good now...') # Includes child <html>
+        self.assert_tips_present(messages,
+            'To the question "Do you like this quizz?", you answered "Yes".\nGreat!',
+            'To the question "How much do you rate this quizz?", you answered "4".\nI love good grades.',
+            'Congratulations!\nAll is good now...',
+        )
         self.assertEqual(progress.text, '')
         self.assertTrue(progress.find_elements_by_css_selector('img'))
 
