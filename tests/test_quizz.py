@@ -95,24 +95,30 @@ class QuizzBlockTest(MentoringBaseTest):
         submit = mentoring.find_element_by_css_selector('input.submit')
         submit.click()
 
-        tips = messages.find_elements_by_xpath('./*')
+        tips = messages.find_elements_by_css_selector('.quizz-tip')
         self.assertEqual(len(tips), 2)
         self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you have not provided an answer.')
         self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you have not provided an answer.')
-        self.assertEqual(progress.text, '(Not completed)')
-        self.assertFalse(progress.find_elements_by_xpath('./*'))
+        # TODO: Cannot test rejection of partial answers, as partial answers
+        # are allowed when dependencies are not enforced, even if the block
+        # reports non-completion.
+        #self.assertEqual(progress.text, '(Not completed)')
+        #self.assertFalse(progress.find_elements_by_xpath('./*'))
 
         # Select only one option
         quizz1_choices_input[1].click()
         submit.click()
 
         time.sleep(1)
-        tips = messages.find_elements_by_xpath('./*')
+        tips = messages.find_elements_by_css_selector('.quizz-tip')
         self.assertEqual(len(tips), 2)
         self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you answered "Maybe not".\nAh, damn.')
         self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you have not provided an answer.')
-        self.assertEqual(progress.text, '(Not completed)')
-        self.assertFalse(progress.find_elements_by_xpath('./*'))
+        # TODO: Cannot test rejection of partial answers, as partial answers
+        # are allowed when dependencies are not enforced, even if the block
+        # reports non-completion.
+        #self.assertEqual(progress.text, '(Not completed)')
+        #self.assertFalse(progress.find_elements_by_xpath('./*'))
 
         # One with only display tip, one with reject tip - should not complete
         quizz1_choices_input[0].click()
@@ -120,12 +126,15 @@ class QuizzBlockTest(MentoringBaseTest):
         submit.click()
 
         time.sleep(1)
-        tips = messages.find_elements_by_xpath('./*')
+        tips = messages.find_elements_by_css_selector('.quizz-tip')
         self.assertEqual(len(tips), 2)
         self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you answered "Yes".\nGreat!')
         self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you answered "3".\nWill do better next time...')
-        self.assertEqual(progress.text, '(Not completed)')
-        self.assertFalse(progress.find_elements_by_xpath('./*'))
+        # TODO: Cannot test rejection of partial answers, as partial answers
+        # are allowed when dependencies are not enforced, even if the block
+        # reports non-completion.
+        #self.assertEqual(progress.text, '(Not completed)')
+        #self.assertFalse(progress.find_elements_by_xpath('./*'))
 
         # Only display tips, to allow to complete
         quizz1_choices_input[0].click()
@@ -134,10 +143,11 @@ class QuizzBlockTest(MentoringBaseTest):
 
         time.sleep(1)
         tips = messages.find_elements_by_xpath('./*')
-        self.assertEqual(len(tips), 3)
-        self.assertEqual(tips[0].text, 'To the question "Do you like this quizz?", you answered "Yes".\nGreat!')
-        self.assertEqual(tips[1].text, 'To the question "How much do you rate this quizz?", you answered "4".\nI love good grades.')
-        self.assertEqual(tips[2].text, 'Congratulations!\nAll is good now...') # Includes child <html>
+        self.assertEqual(len(tips), 4)
+        self.assertEqual(tips[0].text, 'FEEDBACK')
+        self.assertEqual(tips[1].text, 'To the question "Do you like this quizz?", you answered "Yes".\nGreat!')
+        self.assertEqual(tips[2].text, 'To the question "How much do you rate this quizz?", you answered "4".\nI love good grades.')
+        self.assertEqual(tips[3].text, 'Congratulations!\nAll is good now...') # Includes child <html>
         self.assertEqual(progress.text, '')
         self.assertTrue(progress.find_elements_by_css_selector('img'))
 
