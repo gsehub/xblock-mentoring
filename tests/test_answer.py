@@ -47,7 +47,7 @@ class AnswerBlockTest(MentoringBaseTest):
         self.assertEqual(header1.text, 'XBlock: Answer Edit 1')
 
         # Check <html> child
-        p = mentoring.find_element_by_css_selector('div.xblock > p')
+        p = mentoring.find_element_by_css_selector('div.xblock p')
         self.assertEqual(p.text, 'This should be displayed in the answer_edit scenario')
 
         # Initial unsubmitted text
@@ -61,8 +61,12 @@ class AnswerBlockTest(MentoringBaseTest):
         submit = mentoring.find_element_by_css_selector('input.submit')
         submit.click()
         self.assertEqual(answer1.get_attribute('value'), '')
-        self.assertEqual(progress.text, '(Not completed)')
-        self.assertFalse(progress.find_elements_by_xpath('./*'))
+
+        # TODO: Cannot test rejection of partial answers, as partial answers
+        # are allowed when dependencies are not enforced, even if the block
+        # reports non-completion.
+        #self.assertEqual(progress.text, '(Not completed)')
+        #self.assertFalse(progress.find_elements_by_xpath('./*'))
 
         # Submit an answer
         answer1.send_keys('This is the answer')
